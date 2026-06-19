@@ -11,6 +11,7 @@ typedef struct VERIN
     double startmin;
     double stepmin;
     double stopmin;
+    char name[30];
 } VERIN;
 
 /**
@@ -19,6 +20,7 @@ typedef struct VERIN
 int readVERINs(VERIN **listptr)
 {
     char line[256];
+    char pline[256];
     char *str = NULL;
     FILE *in_file = NULL;
     VERIN *verins = NULL;
@@ -45,8 +47,16 @@ int readVERINs(VERIN **listptr)
 
     while (fgets(line, 255, in_file) != NULL)
     {
+        if (line[0] != '1' && line[0] != '2')
+        {
+            strncpy(pline, line, 30);
+        }
+
         if (line[0] == '1')
         {
+
+            strncpy(verins[cnt].name, pline, 30);
+
             strncpy(verins[cnt].line1, line, 69);
             verins[cnt].line1[69] = 0;
             fgets(line, 255, in_file);
@@ -79,7 +89,8 @@ void runVER(VERIN *verins, int cnt)
     {
         parseLines(&tle, verins[i].line1, verins[i].line2);
         getRV(&tle, mins, r, v);
-        printf("%3d %s %ld %18.6f %18.6f %18.6f\n", i + 1, tle.objectID, tle.epoch, r[0], r[1], r[2]);
+        // printf("/* %s */", verins[i].name);
+        printf("%3d %s %16ld %18.6f %18.6f %18.6f\n", i + 1, tle.objectID, tle.epoch, r[0], r[1], r[2]);
     }
 }
 
