@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "TLE.h"
+#include <time.h>
 
 typedef struct VERIN
 {
@@ -79,6 +80,11 @@ int readVERINs(VERIN **listptr)
 
 void runVER(VERIN *verins, int cnt)
 {
+    time_t rawtime;
+
+    time(&rawtime);
+    long millis = rawtime * 1000;
+    printf("Эпоха %ld: \n", millis);
     TLE tle;
     double r[3];
     double v[3];
@@ -88,7 +94,7 @@ void runVER(VERIN *verins, int cnt)
     for (i = 0; i < cnt; i++)
     {
         parseLines(&tle, verins[i].line1, verins[i].line2);
-        getRV(&tle, mins, r, v);
+        getRVForDate(&tle, millis, r, v);
         // printf("/* %s */", verins[i].name);
         printf("%3d %s %16ld %18.6f %18.6f %18.6f\n", i + 1, tle.objectID, tle.epoch, r[0], r[1], r[2]);
     }
