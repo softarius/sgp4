@@ -12,12 +12,8 @@ typedef struct VERIN
     double startmin;
     double stepmin;
     double stopmin;
-    char name[30];
 } VERIN;
 
-/**
- * returns the count of verins read and sets the pointer to an array created with malloc.
- */
 int readVERINs(VERIN **listptr)
 {
     char line[256];
@@ -40,7 +36,7 @@ int readVERINs(VERIN **listptr)
         fclose(in_file);
     }
 
-    verins = malloc(cnt * sizeof(VERIN));
+    verins = (VERIN *)malloc(cnt * sizeof(VERIN));
     *listptr = verins;
 
     cnt = 0;
@@ -55,9 +51,6 @@ int readVERINs(VERIN **listptr)
 
         if (line[0] == '1')
         {
-
-            strncpy(verins[cnt].name, pline, 30);
-
             strncpy(verins[cnt].line1, line, 69);
             verins[cnt].line1[69] = 0;
             fgets(line, 255, in_file);
@@ -93,9 +86,8 @@ void runVER(VERIN *verins, int cnt)
 
     for (i = 0; i < cnt; i++)
     {
-        parseLines(&tle, verins[i].line1, verins[i].line2);
-        getRVForDate(&tle, millis, r, v);
-        printf("/* %s */", verins[i].name);
+        tle.parseLines(verins[i].line1, verins[i].line2);
+        tle.getRVForDate(millis, r, v);
         printf("%3d %s %16ld %18.6f %18.6f %18.6f\n", i + 1, tle.objectID, tle.epoch, r[0], r[1], r[2]);
     }
 }
@@ -103,7 +95,6 @@ void runVER(VERIN *verins, int cnt)
 int main(void)
 {
     int cnt = 0;
-    int i = 0;
     VERIN *verins = NULL;
 
     cnt = readVERINs(&verins);
@@ -112,5 +103,6 @@ int main(void)
     runVER(verins, cnt);
 
     free(verins);
+
     return 0;
 }
